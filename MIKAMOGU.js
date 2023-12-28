@@ -1,7 +1,7 @@
 ﻿/* *************************************************************************** */
 /* 美佳タイプ もぐらたたき編 JAVASCRIPT版ソースコード Ver2.05.01   2023/8/28   */
-/*                                          						           */
-/*                                           Copy right 今村二朗               */
+/*                                          		  Ver2.05.02   2024/1/3    */
+/*                                              Copy right 今村二朗            */
 /*                                                                             */
 /* このソースコードは 改変、転載、他ソフトの使用など自由にお使いください       */
 /*                                                                             */
@@ -72,17 +72,18 @@ MIKA_rt_t=0; /* 成績表示用合計累積練習時間  秒 */
 	[
 		0,0,0,0,0,0
 	];
-MIKA_c_pos1="1234567890"; /* キーボード 最上段 刻印文字列 */;
-MIKA_c_pos2="QWERTYUIOP"; /* キーボード 上一段 刻印文字列 */
-MIKA_c_pos3="ASDFGHJKL;"; /* キーボード ホームポジション 刻印文字列 */
-MIKA_c_pos4="ZXCVBNM,."; /* キーボード 下一段刻文字列印 */
+MIKA_a_pos1="1234567890"; /* キーボード最上段 数字 文字列 */
+MIKA_c_pos1=MIKA_a_pos1; /* キーボード 最上段 刻印文字列 */;
+MIKA_c_pos2=MIKA_a_pos2; /* キーボード 上一段 刻印文字列 */
+MIKA_c_pos3=MIKA_a_pos3+";"; /* キーボード ホームポジション 刻印文字列 */
+MIKA_c_pos4=MIKA_a_pos4+",."; /* キーボード 下一段刻文字列印 */
 MIKA_c_post = [ MIKA_c_pos1,MIKA_c_pos2,MIKA_c_pos3,MIKA_c_pos4 ]; /* キーボード刻印文字列テーブル */
-MIKA_h_pos1="ASDFGHJKL"; /* ホームポジション 練習文字列 */
-MIKA_h_pos2="QWERTYUIOP"; /* 上一段 練習文字列 */
-MIKA_h_pos3="ASDFGHJKLQWERTYUIOP"; /* ホームポジション＋上一段 練習文字列 */
-MIKA_h_pos4="ZXCVBNM"; /* 下一段 練習文字列 */
-MIKA_h_pos5="ASDFGHJKLZXCVBNM"; /* ホームポジション＋下一段 練習文字列 */
-MIKA_h_pos6="ASDFGHJKLQWERTYUIOPZXCVBNM"; /* ホームポジション＋上一段＋下一段 練習文字列 */
+MIKA_h_pos1=MIKA_a_pos3; /* ホームポジション 練習文字列 */
+MIKA_h_pos2=MIKA_a_pos2; /* 上一段 練習文字列 */
+MIKA_h_pos3=MIKA_a_pos3+MIKA_a_pos2; /* ホームポジション＋上一段 練習文字列 */
+MIKA_h_pos4=MIKA_a_pos4; /* 下一段 練習文字列 */
+MIKA_h_pos5=MIKA_a_pos3+MIKA_a_pos4; /* ホームポジション＋下一段 練習文字列 */
+MIKA_h_pos6=MIKA_a_pos3+MIKA_a_pos2+MIKA_a_pos4; /* ホームポジション＋上一段＋下一段 練習文字列 */
 MIKA_h_pos = [ MIKA_h_pos1,MIKA_h_pos2,MIKA_h_pos3,MIKA_h_pos4,MIKA_h_pos5,MIKA_h_pos6]; /* ポジション練習 ランダム練習 練習文字列テーブル */
 MIKA_p_count=null; /* 練習回数配列 アドレス */
 MIKA_p_count_position1=[0,0,0,0,0,0]; /* 初級 練習回数 */
@@ -132,7 +133,7 @@ MIKA_key_guide_on=1; /* 定数 キーガイド表示あり */
 MIKA_key_guide_half=2; /* 定数 文字刻印あり、キーガイド表示無し */
 MIKA_key_guide_off=3; /* 定数 キーガイド表示無し */
 MIKA_type_end_flag = 0; /* 練習終了フラグ =0 ESCによる終了 =1 60文字入力による終了 */
-MIKA_mes0="(^_^) 美佳のタイプトレーナ もぐらたたき編 Ver2.05.01 (^_^)/~~";
+MIKA_mes0="(^_^) 美佳のタイプトレーナ もぐらたたき編 Ver2.05.02 (^_^)/~~";
 MIKA_mes0a="(^_^) 美佳のタイプトレーナ もぐらたたき 初級 (^_^)/~~";
 MIKA_mes0b="(^_^) 美佳のタイプトレーナ もぐらたたき 中級 (^_^)/~~";
 MIKA_mes0c="(^_^) 美佳のタイプトレーナ もぐらたたき 上級 (^_^)/~~";
@@ -232,6 +233,7 @@ window.onload = function() {
 }
 function keydownfunction(event) /* キーダウン処理 */
 {
+	var nChar;
 	const MIKAMOGU = document.getElementById("MIKAMOGU"); /* MIKAMUGU キャンバス取得 */
  	if (MIKAMOGU.getContext) { /* MIKAMOGUのキャンバスが存在した場合 */
     	const g = MIKAMOGU.getContext("2d"); /* 2次元描画 */
@@ -493,7 +495,7 @@ function cslellipse(g,x1,y1,x2,y2,color) /* 指の丸みを楕円で表示 */
 function cslkeyback(g,x_pos,y_pos,color) /* ポジション練習にてエラー文字とキーガイド文字の背景を塗りつぶす */
 {
 	var dx,dy;
-	dx=7;
+	dx=10;
 	dy=7;
 	cslrectt(g,x_pos+MIKA_width_x-dx,y_pos+MIKA_width_y-dy,x_pos+2*MIKA_width_x+dx,y_pos+3*MIKA_width_y+dy,color);
 }
@@ -652,7 +654,7 @@ function dispguidechar(g,key_char,flag) /* ポジション練習で練習文字�
 {
 		var	color;
 		var x,y;
-		var scale=2.8;
+		var scale=2.4;
 		if(key_char!==0) /* 練習文字がゼロでない場合 */
 		{
 				x=2*MIKA_width_x-2; /* 表示位置 x座標算出 */
@@ -666,7 +668,7 @@ function dispguidechar(g,key_char,flag) /* ポジション練習で練習文字�
 					color=MIKA_bk_color; /* フラグが=1の時は表示を消去 */
 				}
 				cslcolor(g,color); /* 表示色を設定 */
-				cslputzscale(g,x,y,key_char,scale); /* 指定位置に 2.8倍の大きさで練習文字を表示 */
+				cslputzscale(g,x,y,key_char,scale); /* 指定位置に 2.4倍の大きさで練習文字を表示 */
 		}
 }
 function dipline(g,x,line,flag) /* キーボード一列表示*/
@@ -1219,8 +1221,8 @@ function convertupperlower(a,b) /* b の文字の種別をa の文字種別に�
 {
 	var char1='A';
 	var char2='a';
-	if('A'<=a&&a<='Z'&&'a'<=b&&b<='z') b=String.fromCharCode(nChar.charCodeAt(0)-char2.charCodeAt(0)+char1.charCodeAt(0)); /* aが大文字でbが小文字の場合はbを大文字に変換 */
-	else	if('a'<=a&&a<='z'&&'A'<=b&&b<='Z') b=String.fromCharCode(nChar.charCodeAt(0)-char1.charCodeAt(0)+char2.charCodeAt(0)); /* aが小文字でbが大文字の場合はbを小文字に変換 */
+	if('A'<=a&&a<='Z'&&'a'<=b&&b<='z') b=String.fromCharCode(b.charCodeAt(0)-char2.charCodeAt(0)+char1.charCodeAt(0)); /* aが大文字でbが小文字の場合はbを大文字に変換 */
+	else	if('a'<=a&&a<='z'&&'A'<=b&&b<='Z') b=String.fromCharCode(b.charCodeAt(0)-char1.charCodeAt(0)+char2.charCodeAt(0)); /* aが小文字でbが大文字の場合はbを小文字に変換 */
 	return b;
 }
 function procptrain(g,nChar) /*  初級 中級 上級 練習の文字入力処理 */
